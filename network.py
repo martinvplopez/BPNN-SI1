@@ -5,7 +5,7 @@ import numpy as np
 
 class Network():
     # Sizes define la estructura de la red y el numero de neuronas por capa e.g Network [2,3,1]
-    # Eta, taza aprendizaje
+    # Eta, tasa aprendizaje
     # Epochs, iteraciones del training dataset completo
     # Size batch
     def __init__(self, sizes,eta,epochs, sizeBatch):
@@ -24,9 +24,14 @@ class Network():
         # dA/dZ
         return sig *(1-sig)
 
-    def derivError(self, activationsOutput, y):
-        # dC/dA
-        return  activationsOutput-y
+    def cuadraticError(self,output, target):
+        return 0.5 * np.square(target-output)
+    def derivError(self, output, y):
+        # dC/dA Error cuadrático
+        return  output-y
+
+    def CrossEntropy(self, activationOutput):
+        return -np.log(activationOutput)
 
     def feedForward(self,a):
         for b,w in zip(self.bias, self.weights):
@@ -46,9 +51,9 @@ class Network():
             for miniBatch in miniBatches:
                 #print("Mini 1", miniBatch)
                 self.updateBatch(miniBatch)
+                print("Error", self.cuadraticError(self.activation,miniBatch[1]))
 
             print("Epoch {} complete".format(j))
-            #print("Error", self.derivError(self.activations[-1], y))
 
     def updateBatch(self, miniBatch):
         # Actualiza los pesos y bias acorde a los datos del batch haciendo uso del backpropagation
@@ -66,7 +71,8 @@ class Network():
         # Actualiza los pesos teniendo en cuenta que se debe dividir delta entre el tamaño del batch
         self.weights=[w-(self.eta/self.sizeBatch)*nw for w,nw in zip(self.weights,nablaW)]
         self.bias=[b-(self.eta/self.sizeBatch)*nb for b,nb in zip(self.bias,nablaB)]
-        #print("Error", self.predict(x)-y)
+
+
 
     def backprop(self,x,y):
         nablaB = [np.zeros(b.shape) for b in self.bias]
@@ -78,9 +84,9 @@ class Network():
         self.activations=[x] # Activaciones de cada capa
         zs=[] # Z de cada capa
         for b,w in zip(self.bias, self.weights):
-            print("bias",b)
-            print("pesos",w[0])
-            print("activ", self.activation)
+            # print("bias",b)
+            # print("pesos",w[0])
+            # print("activ", self.activation)
             # print("Suma de pesos", np.dot(w,activation.transpose()))
             z=np.dot(w,self.activation.transpose())+b # Suma ponderada +b[0]
             zs.append(z)
@@ -95,7 +101,6 @@ class Network():
         # dZ/dW = activacion de la capa anterior
 
         for l in range(2, self.num_layer):
-            print("l", l)
             z=zs[-l]
             sigDer = self.derivSigmoid(z)
             delta = np.dot(self.weights[-l+1].T, delta) * sigDer
@@ -103,5 +108,5 @@ class Network():
             # print("D",delta[0])
             # print(self.activations[-l-1])
             #print("suma nablaw",np.sum(delta[0]*self.activations[-l-1]))
-            nablaW[-1] = np.sum(delta[0]*self.activations[-l-1]) # SI falla se quita el sum
+            nablaW[-1] = np.sum(delta[0]*self.activations[-l-1])
             return (nablaB,nablaW)

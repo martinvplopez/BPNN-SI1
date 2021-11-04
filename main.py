@@ -45,14 +45,6 @@ def accidente(x):
     else:
         return 1.
 
-# def getZona(x):  # mañana 07:00-11:30  mediodia 11:31-15:30 tarde 15:31-21:00 noche 21:01-06:59
-#     hora=x[0:3]
-#     if hora.
-
-
-
-
-
 
 #Convert excel to CSV to successful reading
 train = pd.read_excel('Datos_PrActica_1_BPNN.xls')
@@ -131,10 +123,10 @@ print(df.dtypes)
 # print(x4)
 
 # xc = df.iloc[0:2, 1:13]
-xv= df.iloc[0:100, 1:13].values
+xv= df.iloc[0:20000, 1:13].values
 
 # print(xv)
-y=df.iloc[0:100,13]
+y=df.iloc[0:20000,13]
 # print(y)
 
 #df['DIRECCION_VIENTO'] = pd.to_numeric(df['DIRECCION_VIENTO'], errors='coerce')
@@ -142,24 +134,23 @@ y=df.iloc[0:100,13]
 training_data = list((xv, y))
 #print(training_data)
 
-# print("NUESTRO PROPIO BACKPROPAGATION")
-# bpnn = network.Network(sizes = [12,12,1], eta = 0.01, epochs = 10, sizeBatch = 5)
-# bpnn.SGD(training_data)
+print("NUESTRO PROPIO BACKPROPAGATION")
+bpnn = network.Network(sizes = [12,1,1], eta = 0.01, epochs = 10, sizeBatch = 20)
+bpnn.SGD(training_data)
 
 
 
 print("BACKPROPAGATION CON KERAS")
 
-print(df.shape[0]*0.7)
-# 70% del dataset se usará para el entrenamiento y el 30% para validación
+
+# Training and test sets
 xTrain=df.iloc[0:45874,1:13]
-print(xTrain.shape)
 yTrain=df.iloc[0:45874,13]
-print(yTrain.shape)
 xTest=df.iloc[45875:df.shape[0],1:13]
 yTest=df.iloc[45875:df.shape[0],13]
-#
-netK=netKeras.netKeras(5,0.015)
+
+
+netK=netKeras.netKeras(50,0.01)
 netK.train(xTrain,yTrain, xTest,yTest)
 
 

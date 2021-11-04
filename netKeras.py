@@ -13,15 +13,14 @@ class netKeras():
     def train(self, Xtrain, Ytrain, Xtest, Ytest):
         model=keras.Sequential([
             keras.layers.Dense(4,input_shape=(12,),activation='sigmoid'),
-            keras.layers.Dense(2, input_shape=(4,), activation='sigmoid'),
-            keras.layers.Dense(1,input_shape=(2,),activation='sigmoid')
+            keras.layers.Dense(1,input_shape=(4,),activation='sigmoid')
         ])
         opt = keras.optimizers.SGD(learning_rate=self.eta)
         model.compile(optimizer=opt,
-                      loss='mean_squared_error',
-                      metrics=[ 'accuracy',tf.keras.metrics.BinaryCrossentropy()])
+                      loss='binary_crossentropy',
+                      metrics=[ 'accuracy',tf.keras.metrics.AUC()])
 
-        model.fit(Xtrain, Ytrain, epochs=self.epochs)
+        model.fit(Xtrain, Ytrain, epochs=self.epochs, batch_size=1)
         model.evaluate(Xtest,Ytest)
 
 
