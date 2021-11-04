@@ -33,6 +33,7 @@ class Network():
             a=self.sigmoid(np.dot(w,a)+b)
         return a
 
+
     def SGD(self, trainData):
         # Descenso del gradiente estocástico
         # traindata es una tupla con pares de la entrada y valores deseados
@@ -47,7 +48,7 @@ class Network():
                 self.updateBatch(miniBatch)
 
             print("Epoch {} complete".format(j))
-            #print("Error", self.derivError(self.activations[-1], y)
+            #print("Error", self.derivError(self.activations[-1], y))
 
     def updateBatch(self, miniBatch):
         # Actualiza los pesos y bias acorde a los datos del batch haciendo uso del backpropagation
@@ -58,32 +59,33 @@ class Network():
         x=miniBatch[0]
         y=miniBatch[1]
         deltaNablaB, deltanablaW= self.backprop(x,y)
-        print("Deltas",deltanablaW,deltaNablaB)
+        #print("Deltas",deltanablaW,deltaNablaB)
         nablaB= [nb+dnb for nb, dnb in zip(nablaB, deltaNablaB)]
         nablaW= [nw+dnw for nw, dnw in zip(nablaW, deltanablaW)]
 
         # Actualiza los pesos teniendo en cuenta que se debe dividir delta entre el tamaño del batch
         self.weights=[w-(self.eta/self.sizeBatch)*nw for w,nw in zip(self.weights,nablaW)]
         self.bias=[b-(self.eta/self.sizeBatch)*nb for b,nb in zip(self.bias,nablaB)]
+        #print("Error", self.predict(x)-y)
 
     def backprop(self,x,y):
         nablaB = [np.zeros(b.shape) for b in self.bias]
         nablaW = [np.zeros(w.shape) for w in self.weights]
 
         # Feedforward
-        activation=x # Activacion será la entrada
+        self.activation=x # Activacion será la entrada
         #print("Entrada",x)
         self.activations=[x] # Activaciones de cada capa
         zs=[] # Z de cada capa
         for b,w in zip(self.bias, self.weights):
             print("bias",b)
             print("pesos",w[0])
-            print("activ", activation)
+            print("activ", self.activation)
             # print("Suma de pesos", np.dot(w,activation.transpose()))
-            z=np.dot(w,activation.transpose())+b # Suma ponderada +b[0]
+            z=np.dot(w,self.activation.transpose())+b # Suma ponderada +b[0]
             zs.append(z)
-            activation=self.sigmoid(z) # sig(z)= activacion
-            self.activations.append(activation)
+            self.activation=self.sigmoid(z) # sig(z)= activacion
+            self.activations.append(self.activation)
 
         # Retropropagación
         # Delta de la neurona de salida será dC/DA* dA/dZ
@@ -98,8 +100,8 @@ class Network():
             sigDer = self.derivSigmoid(z)
             delta = np.dot(self.weights[-l+1].T, delta) * sigDer
             nablaB[-l]=delta
-            # print("D",delta)
-            # print(activations[-l-1])
-            # print("suma nablaw",np.sum(delta[0]*activations[-l-1]))
+            # print("D",delta[0])
+            # print(self.activations[-l-1])
+            #print("suma nablaw",np.sum(delta[0]*self.activations[-l-1]))
             nablaW[-1] = np.sum(delta[0]*self.activations[-l-1]) # SI falla se quita el sum
             return (nablaB,nablaW)
