@@ -3,5 +3,5 @@
 ### Backpropagation con Keras: SGD Optimizer, CrossEntropy as CostFunction.
 ### Metrics= Accuracy y AUC
 
-![Screenshot](MicrosoftTeams-image%20(2).png)
+![Screenshot](Architecture-image.png)
 
